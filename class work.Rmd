@@ -1,18 +1,19 @@
 ---
 title: "Class 10-29-2019"
-author: "Mari Jones"
+author: "Mari Jones and Amal Abdi"
 date: "10/29/2019"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(janitor)
 library(googlesheets4)
+library(infer)
 ```
 
 ```{r}
@@ -23,11 +24,36 @@ x <- read_sheet("1cgP-e6THVfiW5TJ95QhX3jkNxKvc8Sicp9k_BkSRd2I") %>%
 
 x %>%
   ggplot(aes(prop_red)) +
-  geom_bar()
+  geom_bar() +
+  labs(title = "The World")
 ```
 
 ```{r}
 y <- tibble(bead = c(rep("Red", 2000), rep("White", 8000)))
 
+
+# Bootstrapping
+# Test Katie's idea that outlier is not that weird
+
+z <- y %>% 
+  rep_sample_n(size = 25, replace = TRUE, reps = 1000) %>%
+  group_by(replicate) %>% 
+  summarize(prop_red = sum(bead == "Red")/n())
+
+
+z %>% 
+  ggplot(aes(prop_red)) +
+  geom_bar() +
+  labs(title = "A Model With Each Replication Independent")
 ```
+
+It seems that the model shows that it is not possible for there to have been a draw where 60% of the beads were read. We need to make sure that our model lines up with the world.
+Guesses
+Simulation assumes that each time they are shuffled well (wrong). Or maybe not replace = TRUE.
+
+
+```{r loading trains data from google}
+trains <- read_sheet("1QV7o63fiZdNtMtLQfdwREapf8eYDjpfSRX0dgfNrB8A")
+```
+
 
